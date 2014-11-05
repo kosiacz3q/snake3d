@@ -5,26 +5,26 @@
 
 class Brick
 {
-    public:
-        Brick();
-        virtual ~Brick();
+	public:
+		Brick();
+		virtual ~Brick();
 
-        void draw();
-        void update();
-        void init();
+		void draw();
+		void update();
+		void init();
 
-        float* color_normal_vertex;
-        GLubyte* indexTable;
+		float* color_normal_vertex;
+		GLubyte* indexTable;
 
-        void setPosition(const Vector3f& pos);
+		void setPosition(const Vector3f& pos);
 		void setRotation(const Vector3f& rot);
 		void rotate(const Vector3f& shrot);
 		void move(const Vector3f& shift);
 		Vector3f position;
 		Vector3f rotation;
-    protected:
-        Brick(object_type type);
-    private:
+	protected:
+		Brick(object_type type);
+	private:
 
 };
 
