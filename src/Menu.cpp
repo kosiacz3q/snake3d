@@ -1,9 +1,13 @@
 #include "Menu.h"
 
 #include <GL/glut.h>
+#include <boost/foreach.hpp>
+
 #include "Camera.h"
 #include "GameStateManager.h"
 #include "Colors.h"
+
+HighscoreHandler* Menu::highscoreHandler = nullptr;
 
 Menu::Menu()
 {
@@ -19,11 +23,15 @@ void Menu::init()
 	glutMotionFunc(Menu::performMouseDragg);
 	glutPassiveMotionFunc(Menu::performMouseMove);
 	glutIdleFunc(Menu::update);
+
+	highscoreHandler = new HighscoreHandler();
+	highscoreHandler->loadAll();
 }
 
 void Menu::close()
 {
-
+	highscoreHandler->saveAll();
+	delete highscoreHandler;
 }
 
 void Menu::performKeyboardInput(unsigned char key, int x, int y)
@@ -86,6 +94,10 @@ void Menu::performMouseMove(int x, int y)
 
 void Menu::drawAll()
 {
+	static const std::string stringStart = "[P]lay";
+	static const std::string stringQuit = "[Q]uit";
+
+
 	// kolor tła - zawartość bufora koloru
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 
@@ -100,16 +112,26 @@ void Menu::drawAll()
 
 	gluLookAt(0., 0., 3., 0., 0., 0., 0., 1., 0.);
 
+	int innerCounter = 0;
+	BOOST_FOREACH(Highscore highscore, highscoreHandler->getHighscores())
+	{
+		drawString(highscore.getName().c_str(), highscore.getName().length(), 0.3, 0.2 - (innerCounter * 0.2), 0.);
+		drawString(highscore.getResult().c_str(), highscore.getResult().length(), 2.5, 0.2 - (innerCounter * 0.2), 0.);
+		++innerCounter;
+	}
+
 	glEnable( GL_DEPTH_TEST);
 	/*****<OBJECT DRAWING>*******/
-	drawString("[p]lay", 6, -0.5, 0.2, 0.);
-	drawString("[q]uit", 6, -0.5, -0.2, 0.);
+	drawString(stringStart.c_str(), stringStart.length(), -2.5, 2.2, 0.);
+	drawString(stringQuit.c_str(), stringQuit.length(), -2.5, 1.8, 0.);
 	/*****</OBJECT DRAWING>*******/
 
 	glFlush();
 
 	glutSwapBuffers();
 }
+
+
 
 void Menu::update()
 {

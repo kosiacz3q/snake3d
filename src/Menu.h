@@ -1,10 +1,11 @@
 #ifndef MENU_H_
 #define MENU_H_
 
+#include "highscore/HighscoreHandler.h"
+
 class Menu
 {
 	public:
-
 		static void init();
 		static void close();
 		static void update();
@@ -18,6 +19,7 @@ class Menu
 	private:
 		static void drawString(const char*, int length, const float x, const float y, const float z);
 		Menu();
+		static HighscoreHandler* highscoreHandler;
 
 };
 
