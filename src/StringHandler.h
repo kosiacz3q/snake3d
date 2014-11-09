@@ -16,6 +16,13 @@ class StringHandler
 			return std::string(oss.str());
 		}
 
+		static std::string padTo(std::string &str, const size_t num, const char paddingChar = ' ')
+		{
+			while (num > str.size())
+				str += paddingChar;
+
+			return str;
+		}
 	private:
 		StringHandler();
 };

@@ -1,4 +1,5 @@
 #include "Obstacle.h"
+#include "gamestage/GameStateManager.h"
 
 Obstacle::Obstacle()
 		: MapObject(OBSTACLE)
@@ -32,8 +33,10 @@ void Obstacle::giveMessage(Message::MessagePack* msg)
 		{
 			Message::CollisionNotification* mc = (Message::CollisionNotification*) msg;
 			mc->otherObject->giveMessage(new Message::SimpleNotification(this->ID, Message::KILL));
+			GameStateManager::setProperty(Properties::DEATH_CAUSE , "You hit a fucking wall");
 		}
 			break;
+
 
 		case Message::SIMPLE_NOTIFICATION:
 		{
@@ -45,5 +48,6 @@ void Obstacle::giveMessage(Message::MessagePack* msg)
 		default:
 			break;
 	}
+
 	delete msg;
 }

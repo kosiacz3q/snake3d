@@ -5,6 +5,7 @@
 #include <boost/foreach.hpp>
 #include <fstream>
 #include <iterator>
+#include <algorithm>
 
 #include "rapidXml/rapidxml.hpp"
 #include "rapidXml/rapidxml_utils.hpp"
@@ -14,7 +15,6 @@ std::string Highscore::getName()
 {
 	return name;
 }
-
 
 std::string Highscore::getResult()
 {
@@ -48,9 +48,10 @@ void HighscoreHandler::loadAll()
 	while (node1 != NULL)
 	{
 		this->add(Highscore(node1->first_node("name")->value(), boost::lexical_cast<int>(node1->first_node("result")->value())));
-		std::cout << _highscores.back().name << ": " << _highscores.back().result << "\n";
 		node1 = node1->next_sibling();
 	}
+
+	sort();
 }
 
 std::vector<Highscore>& HighscoreHandler::getHighscores()
@@ -58,19 +59,37 @@ std::vector<Highscore>& HighscoreHandler::getHighscores()
 	return _highscores;
 }
 
+void HighscoreHandler::sort()
+{
+	std::sort(_highscores.begin(), _highscores.end(), [](Highscore x, Highscore y)
+	{
+		return boost::lexical_cast<int>(x.result ) > boost::lexical_cast<int>(y.result);
+	});
+
+	cut();
+}
+
+void HighscoreHandler::cut()
+{
+	while(_highscores.size() > 9)
+	{
+		_highscores.erase(_highscores.end() - 1);
+	}
+}
+
 void HighscoreHandler::saveAll()
 {
 	rapidxml::xml_document<> doc;
 	std::ofstream out("data");
 
-	// xml declaration node
+// xml declaration node
 	rapidxml::xml_node<>* decl = doc.allocate_node(rapidxml::node_declaration); //allocate default xml declaration node
-	//apppend special attributes to it
+//apppend special attributes to it
 	decl->append_attribute(doc.allocate_attribute("version", "1.0"));
 	decl->append_attribute(doc.allocate_attribute("encoding", "utf-8"));
 	doc.append_node(decl); //finally, append node
 
-	//allocate root node
+//allocate root node
 	rapidxml::xml_node<>* root = doc.allocate_node(rapidxml::node_element, "root"); //node element is the type of node
 	doc.append_node(root);
 
@@ -87,8 +106,6 @@ void HighscoreHandler::saveAll()
 		nodeHighscore->append_node(nodeName);
 
 		rapidxml::xml_node<>* nodeResult = doc.allocate_node(rapidxml::node_element, "result");
-		//std::cout<<StringHandler::TToStr(highscore.result).c_str()<<"\n";
-		//nodeResult->value(StringHandler::TToStr(highscore.result).c_str(), StringHandler::TToStr(highscore.result).length() );
 		nodeResult->value(highscore.result.c_str());
 		nodeHighscore->append_node(nodeResult);
 	}
@@ -103,5 +120,6 @@ void HighscoreHandler::saveAll()
 void HighscoreHandler::add(const Highscore newHighscore)
 {
 	_highscores.push_back(newHighscore);
+	sort();
 }
 

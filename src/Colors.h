@@ -58,6 +58,9 @@ const GLfloat BlueViolet[4] =
 const GLfloat Brown[4] =
 { 0.647059, 0.164706, 0.164706, 1.000000 };
 
+const GLfloat Bronze[4] =
+{ 0.4, 0.363281, 0.11718, 1.000000 };
+
 const GLfloat BurlyWood[4] =
 { 0.870588, 0.721569, 0.529412, 1.000000 };
 

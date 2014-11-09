@@ -1,9 +1,13 @@
-#include "GameStateManager.h"
+#include <GL/freeglut.h>
+#include <IL/il.h>
+
+#include "gamestage/GameStateManager.h"
+
 
 int main(int argc, char **argv)
 {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_ALPHA);
 	glutInitWindowSize(800, 600);
 	glutInitWindowPosition(250, 100);
 
@@ -20,10 +24,16 @@ int main(int argc, char **argv)
 
 	glutCreateWindow("Snake3D");
 
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable( GL_BLEND );
+
 	ilInit();
 	ilClearColour(255, 255, 255, 000);
 
-	GameStateManager::startMenuState();
+	GameStateManager::init();
+	GameStateManager::startIntroState();
+	//GameStateManager::setProperty("colorPerWall" , "yes");
+	GameStateManager::setProperty(Properties::PLAYER_NAME , "kosiacz3q");
 	glutMainLoop();
 	GameStateManager::close();
 

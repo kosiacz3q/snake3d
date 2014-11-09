@@ -13,7 +13,7 @@ SnakeBody::SnakeBody(Vector4f startPos)
 	headRealPos = Vector3f();
 	_boostTimer = 0;
 
-	tail.push_back(BrickProperties(startPos, Colors::HotPink));
+	tail.push_back(BrickProperties(startPos, Colors::Blue));
 }
 
 SnakeBody::~SnakeBody()

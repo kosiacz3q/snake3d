@@ -13,6 +13,11 @@ class Highscore
 			setResult(result);
 		}
 
+		Highscore(std::string name, std::string result)
+						: name(name), result(result)
+		{
+		}
+
 		std::string getName();
 		std::string getResult();
 		void setResult(int result);
@@ -34,6 +39,8 @@ class HighscoreHandler
 		void add(const Highscore newHighscore);
 		std::vector<Highscore>& getHighscores();
 	private:
+		void sort();
+		void cut();
 		std::vector<Highscore> _highscores;
 };
 

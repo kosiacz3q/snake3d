@@ -1,5 +1,7 @@
 #include "RotaryCounter.h"
+
 #include <string>
+
 #include "Colors.h"
 #include "StringHandler.h"
 
@@ -119,7 +121,6 @@ void RotaryCounter::draw()
 		glPopMatrix();
 		glTranslatef(1.1, 0, 0);
 	}
-	//glBindTexture(GL_TEXTURE_2D , NULL);
 
 	glDisable(GL_TEXTURE_2D);
 
@@ -129,19 +130,6 @@ void RotaryCounter::draw()
 void RotaryCounter::setRotation(const Vector3f& rot)
 {
 	rotation = Vector3f(rot);
-}
-
-void RotaryCounter::drawString(const char* seq, int length)
-{
-
-	glColor4fv(Colors::DarkBlue);
-
-	glRasterPos3f((GLfloat) this->position.x, (GLfloat) this->position.y, (GLfloat) this->position.z);
-
-	for (int i = 0; i < length; ++i)
-	{
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, seq[i]);
-	}
 }
 
 void RotaryCounter::addPoints(int howMany)
@@ -175,4 +163,9 @@ void RotaryCounter::update(int mili)
 			}
 		}
 	}
+}
+
+int RotaryCounter::getValue()
+{
+	return value;
 }

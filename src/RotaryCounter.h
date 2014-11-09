@@ -10,17 +10,17 @@
 class RotaryCounter
 {
 	public:
-
-		static void init();
-		static void free();
 		RotaryCounter(Vector3f& position);
 		~RotaryCounter();
-		void draw();
 
+		void draw();
+		static void init();
+		static void free();
 		void setRotation(const Vector3f& rot);
-		void drawString(const char* seq, int length);
 		void addPoints(int howMany);
 		void update(int mili);
+		int getValue();
+
 	private:
 		struct Section
 		{

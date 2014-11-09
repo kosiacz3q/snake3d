@@ -1,9 +1,8 @@
 #include "MainBrick.h"
-#include "GameStateManager.h"
-
 #include "ShapeGenerator.h"
 #include <math.h>
 #include "Camera.h"
+#include "gamestage/GameStateManager.h"
 #include "RandomPositionGenerator.h"
 
 MainBrick::~MainBrick()
@@ -27,6 +26,7 @@ MainBrick::MainBrick()
 	controlInfo = new Message::ControlInfo(0);
 	snakeID = 0;
 	parent = 0;
+	objects = MapObjects();
 
 	translationTab[Direction::DOWN] = Direction::DOWN;
 	translationTab[Direction::UP] = Direction::UP;
@@ -110,7 +110,6 @@ void MainBrick::giveMessage(Message::MessagePack* mp)
 
 void MainBrick::updateAll(int time)
 {
-
 	for (MapObjects::const_iterator iter = objects.begin(); iter != objects.end(); ++iter)
 	{
 		iter->second->update(time);
@@ -118,7 +117,8 @@ void MainBrick::updateAll(int time)
 
 	MainBrick::detectCollisions();
 
-	for (MessagesVector::iterator iter = messages.begin(); iter != messages.end() && GameStateManager::actualState == GAME_STATE::GAME; ++iter)
+	for (MessagesVector::iterator iter = messages.begin();
+			iter != messages.end() && GameStateManager::getActualGameStage()->getGameStageEnum() == GAME_STAGE::GAME; ++iter)
 	{
 		switch ((*iter)->msgType)
 		{
@@ -549,26 +549,29 @@ void MainBrick::updateAll(int time)
 				}
 
 				//setting color
-				switch ((int) mvr->head.position.w)
+				if (GameStateManager::getProperty(Properties::COLOR_PER_WALL).compare("yes") == 0)
 				{
-					case 1:
-						mvr->head.color = Colors::Blue;
-						break;
-					case 2:
-						mvr->head.color = Colors::Black;
-						break;
-					case 3:
-						mvr->head.color = Colors::Cyan;
-						break;
-					case 4:
-						mvr->head.color = Colors::Orange;
-						break;
-					case 5:
-						mvr->head.color = Colors::LimeGreen;
-						break;
-					case 6:
-						mvr->head.color = Colors::Violet;
-						break;
+					switch ((int) mvr->head.position.w)
+					{
+						case 1:
+							mvr->head.color = Colors::Blue;
+							break;
+						case 2:
+							mvr->head.color = Colors::Crimson;
+							break;
+						case 3:
+							mvr->head.color = Colors::Cyan;
+							break;
+						case 4:
+							mvr->head.color = Colors::Orange;
+							break;
+						case 5:
+							mvr->head.color = Colors::LimeGreen;
+							break;
+						case 6:
+							mvr->head.color = Colors::DarkViolet;
+							break;
+					}
 				}
 
 				/*******SENDING MESSAGE************/
@@ -638,7 +641,6 @@ void MainBrick::updateAll(int time)
 
 			case Message::SIMPLE_NOTIFICATION:
 			{
-
 				switch (((Message::SimpleNotification*) *iter)->notification)
 				{
 					case Message::DISPOSE_ME_REQUEST:
@@ -647,7 +649,9 @@ void MainBrick::updateAll(int time)
 						break;
 
 					case Message::PLAYER_1_DEAD:
-						GameStateManager::startMenuState();
+						GameStateManager::setProperty(Properties::NEW_HIGHSCORE_INDICATOR, "true");
+						GameStateManager::startDeathScreenState();
+						return;
 						break;
 
 					case Message::BOOST_OBTAINED_JUMP:

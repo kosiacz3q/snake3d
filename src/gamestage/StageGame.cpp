@@ -1,43 +1,37 @@
-#include "Game.h"
+#include "StageGame.h"
 
+#include "../ShapeGenerator.h"
+#include "../Colors.h"
+#include "../RandomPositionGenerator.h"
 #include "GameStateManager.h"
-#include "ShapeGenerator.h"
-#include "Colors.h"
-#include "RandomPositionGenerator.h"
 
-#ifdef DEBUG
-#include<cstdio>
-#endif
 
-ObjectContainer Game::gameObjects = ObjectContainer();
-MouseHandler Game::mouse = MouseHandler();
-MainBrick* Game::mainBrick = NULL;
-SnakeBody* Game::playerSnake = NULL;
-boost::posix_time::ptime Game::lastUpdate;
-int Game::acumulatedMiliseconds_objectSpawn = 0;
-RotaryCounter* Game::pointsCounter = 0;
-Game::DataConnector* Game::dataConnector = 0;
-SnakeAbilities* Game::abilitiesIndicator = nullptr;
-
-Game::Game()
+StageGame::StageGame()
 {
+	gameObjects = ObjectContainer();
+	mouse = MouseHandler();
+	mainBrick = nullptr;
+	playerSnake = nullptr;
+	acumulatedMiliseconds_objectSpawn = 0;
+	pointsCounter =  nullptr;
+	dataConnector = nullptr;
+	abilitiesIndicator = nullptr;
 }
 
-void Game::DataConnector::giveMessage(Message::MessagePack* msg)
+void StageGame::DataConnector::giveMessage(Message::MessagePack* msg)
 {
 
 	if (msg->msgType == Message::ADD_POINTS)
 	{
-		Game::pointsCounter->addPoints(((Message::AddPoints*) msg)->points);
+		parent->pointsCounter->addPoints(((Message::AddPoints*) msg)->points);
 	}
 	else if (msg->msgType == Message::SIMPLE_NOTIFICATION)
 	{
-		Game::abilitiesIndicator->setActiveAbility(((Message::SimpleNotification*) msg)->notification);
-
+		parent->abilitiesIndicator->setActiveAbility(((Message::SimpleNotification*) msg)->notification);
 	}
 }
 
-void Game::drawAll()
+void StageGame::drawAll()
 {
 
 	if (mainBrick != 0)
@@ -59,8 +53,8 @@ void Game::drawAll()
 
 		Camera::setStaticVision();
 
-		Game::pointsCounter->draw();
-		Game::abilitiesIndicator->draw();
+		pointsCounter->draw();
+		abilitiesIndicator->draw();
 
 		glFlush();
 
@@ -68,13 +62,17 @@ void Game::drawAll()
 	}
 }
 
-void Game::performlogic()
+void StageGame::performlogic()
 {
-	if (gameObjects.size() > 0)
-		ShapeGenerator::LSDonGL_C4F_N3F_V3F(((Brick*) gameObjects.begin()->second)->color_normal_vertex, 8);
+
 }
 
-void Game::performKeyboardInput(unsigned char key, int x, int y)
+GAME_STAGE::GAME_STAGE StageGame::getGameStageEnum()
+{
+	return GAME_STAGE::GAME;
+}
+
+void StageGame::performKeyboardInput(unsigned char key, int x, int y)
 {
 
 	if ((int) key < 97)
@@ -85,23 +83,19 @@ void Game::performKeyboardInput(unsigned char key, int x, int y)
 	switch (key)
 	{
 		case 'a':
-
-			mainBrick->mainBrick->rotate(Vector3f(1., 0., 0.));
+			mainBrick->controlInfo->glutKey = GLUT_KEY_LEFT;
 			break;
 
 		case 'w':
-
-			mainBrick->mainBrick->rotate(Vector3f(0., -1., 0.));
+			mainBrick->controlInfo->glutKey = GLUT_KEY_UP;
 			break;
 
 		case 'd':
-
-			mainBrick->mainBrick->rotate(Vector3f(-1., 0., 0.));
+			mainBrick->controlInfo->glutKey = GLUT_KEY_RIGHT;
 			break;
 
 		case 's':
-
-			mainBrick->mainBrick->rotate(Vector3f(0., 1., 0.));
+			mainBrick->controlInfo->glutKey = GLUT_KEY_DOWN;
 			break;
 		case 'q':
 			GameStateManager::startMenuState();
@@ -112,37 +106,31 @@ void Game::performKeyboardInput(unsigned char key, int x, int y)
 
 }
 
-void Game::performSpecialKeyboardInput(int key, int x, int y)
+void StageGame::performSpecialKeyboardInput(int key, int x, int y)
 {
 
 	mainBrick->controlInfo->glutKey = (short) key;
 
 }
 
-void Game::reshape(int width, int height)
+void StageGame::reshape(int width, int height)
 {
-
-	// obszar renderingu - całe okno
 	glViewport(0, 0, width, height);
 
-	// wybór macierzy rzutowania
 	glMatrixMode( GL_PROJECTION);
 
-	// macierz rzutowania = macierz jednostkowa
 	glLoadIdentity();
 
-	// obliczenie aspektu obrazu z uwzględnieniem
-	// przypadku, gdy wysokość obrazu wynosi 0
 	GLdouble aspect = 1;
 	if (height > 0)
 		aspect = width / (GLdouble) height;
 
-	// rzutowanie perspektywiczne
 	gluPerspective(90, aspect, 1.0, 5.0);
 }
 
-void Game::close()
+void StageGame::close()
 {
+	GameStateManager::setProperty(Properties::NEW_HIGHSCORE_VALUE , boost::lexical_cast<std::string>(pointsCounter->getValue()));
 
 	delete mainBrick;
 	mainBrick = nullptr;
@@ -153,25 +141,16 @@ void Game::close()
 
 	SnakeAbilities::free();
 	RotaryCounter::free();
-	delete Game::pointsCounter;
-	delete Game::dataConnector;
-	delete Game::abilitiesIndicator;
+	delete pointsCounter;
+	delete dataConnector;
+	delete abilitiesIndicator;
 
-	Game::dataConnector = 0;
+	dataConnector = 0;
 
 }
 
-void Game::init()
+void StageGame::init()
 {
-
-	glutReshapeFunc(Game::reshape);
-	glutKeyboardFunc(Game::performKeyboardInput);
-	glutSpecialFunc(Game::performSpecialKeyboardInput);
-	glutMouseFunc(Game::performMouseAction);
-	glutMotionFunc(Game::performMouseDragg);
-	glutPassiveMotionFunc(Game::performMouseMove);
-	glutIdleFunc(Game::update);
-
 	Camera::reset();
 	Camera::setPosition(Vector3f(0., 0., 3.));
 
@@ -179,10 +158,10 @@ void Game::init()
 
 	RandomPositionGenerator::clearReservedPosition();
 
-	Game::initObjects();
+	initObjects();
 }
 
-void Game::update()
+void StageGame::update()
 {
 
 	boost::posix_time::ptime actual = boost::posix_time::microsec_clock::local_time();
@@ -193,7 +172,7 @@ void Game::update()
 
 	if (mainBrick != nullptr)
 	{
-		Game::pointsCounter->update(diff.total_milliseconds());
+		pointsCounter->update(diff.total_milliseconds());
 		acumulatedMiliseconds_objectSpawn += diff.total_milliseconds();
 
 		lastUpdate = actual;
@@ -205,9 +184,6 @@ void Game::update()
 
 			int num = RandomPositionGenerator::getRandomNumber(0, 7);
 
-#ifdef DEBUG
-			printf("%i\n" , num);
-#endif
 			switch (num)
 			{
 				case 0:
@@ -231,28 +207,27 @@ void Game::update()
 			acumulatedMiliseconds_objectSpawn -= 1000;
 		}
 
-		Game::performlogic();
-
-		Game::drawAll();
+		performlogic();
+		drawAll();
 	}
 
 }
 
-void Game::initObjects()
+void StageGame::initObjects()
 {
 
-	Game::dataConnector = new DataConnector();
+	dataConnector = new DataConnector(this);
 	Vector3f pos = Vector3f(-3.5, -2, 0.);
-	Game::pointsCounter = new RotaryCounter(pos);
-	Game::pointsCounter->setRotation(Vector3f(60, 55, 0));
+	pointsCounter = new RotaryCounter(pos);
+	pointsCounter->setRotation(Vector3f(60, 55, 0));
 
-	Game::abilitiesIndicator = new SnakeAbilities(Vector3f(2.5, -1.8, 0.));
-	Game::abilitiesIndicator->setRotation(Vector3f(-50., -30, 0));
+	abilitiesIndicator = new SnakeAbilities(Vector3f(2.5, -1.8, 0.));
+	abilitiesIndicator->setRotation(Vector3f(-50., -30, 0));
 	SnakeAbilities::init();
 
 	//Main Brick
 	mainBrick = new MainBrick();
-	mainBrick->setParent(Game::dataConnector);
+	mainBrick->setParent(dataConnector);
 	mainBrick->mainBrick->color_normal_vertex = new float[80];
 	mainBrick->mainBrick->indexTable = new GLubyte[36];
 	mainBrick->objectsBrick->color_normal_vertex = new float[80];
@@ -314,7 +289,7 @@ void Game::initObjects()
 	}
 }
 
-void Game::performMouseDragg(int x, int y)
+void StageGame::performMouseDragg(int x, int y)
 {
 	mouse.setMousePosition(x, y);
 
@@ -322,7 +297,7 @@ void Game::performMouseDragg(int x, int y)
 	mainBrick->mainBrick->rotation.y -= (mouse.lastPosition.y - mouse.actualPosition.y);
 }
 
-void Game::performMouseAction(int button, int state, int x, int y)
+void StageGame::performMouseAction(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON)
 		mouse.leftButtonState = state;
@@ -332,7 +307,7 @@ void Game::performMouseAction(int button, int state, int x, int y)
 	mouse.setMousePosition(x, y);
 }
 
-void Game::performMouseMove(int x, int y)
+void StageGame::performMouseMove(int x, int y)
 {
 	mouse.setMousePosition(x, y);
 }
