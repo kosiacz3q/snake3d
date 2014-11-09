@@ -195,13 +195,16 @@ void ShapeGenerator::getDebugInfo(const float* tab, int width, int height)
 
 void ShapeGenerator::LSDonGL_C4F_N3F_V3F(float* tab, int height)
 {
-	boost::mt19937 generator(time(0));
+
 	for (int i = 0; i < height; ++i)
 	{
+		boost::mt19937 generator0(time(0) + i + 23);
+		boost::mt19937 generator1(time(0) + i + 4112);
+		boost::mt19937 generator2(time(0) + i + 926213);
 		boost::uniform_real<float> u01;
-		tab[(i * 10) + 0] = u01(generator);
-		tab[(i * 10) + 1] = u01(generator);
-		tab[(i * 10) + 2] = u01(generator);
+		tab[(i * 10) + 0] = u01(generator0);
+		tab[(i * 10) + 1] = u01(generator1);
+		tab[(i * 10) + 2] = u01(generator2);
 	}
 }
 

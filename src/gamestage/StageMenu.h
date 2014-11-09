@@ -4,7 +4,11 @@
 #include <vector>
 
 #include "../gui/TextInFrame.h"
+#include "../gui/SelectableTexturedButton.h"
+#include "../gui/SelfStabilizingRotator.h"
+
 #include "../highscore/HighscoreHandler.h"
+
 #include "GameStage.h"
 
 
@@ -29,9 +33,17 @@ class StageMenu : public GameStage
 		void drawAll();
 
 	private:
+		int pick(float x, float y);
 		void initHighScores();
+
 		HighscoreHandler* highscoreHandler;
 		std::vector<TextInFrame> highscores;
+		SelectableTexturedButton* _buttonPlay;
+		SelectableTexturedButton* _buttonQuit;
+		SelfStabilizingRotator* mouseRotator;
+		Vector2f lastMousePositon;
+		GLdouble aspect = 1;
+
 };
 
 #endif /* MENU_H_ */

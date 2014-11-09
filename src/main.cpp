@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_ALPHA);
-	glutInitWindowSize(800, 600);
+	glutInitWindowSize(900, 600);
 	glutInitWindowPosition(250, 100);
 
 	glDisable(GL_ALL_ATTRIB_BITS);

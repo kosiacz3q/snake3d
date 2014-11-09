@@ -101,9 +101,9 @@ void StageDeathCause::drawAll()
 
 	StringDrawer::drawString("You are dead because", -0.9, .5f, 0 , GLUT_BITMAP_9_BY_15);
 
-	StringDrawer::drawString(deathCause, -0.05 * deathCause.size(), -0, 0, GLUT_BITMAP_TIMES_ROMAN_24, Colors::Red);
+	StringDrawer::drawString(deathCause, -0.045 * deathCause.size(), -0, 0, GLUT_BITMAP_TIMES_ROMAN_24, Colors::Red);
 
-	StringDrawer::drawString(points, -0.04 * points.size(), -.5f, 0, GLUT_BITMAP_9_BY_15);
+	StringDrawer::drawString(points, -0.045 * points.size(), -.5f, 0, GLUT_BITMAP_9_BY_15);
 
 	StringDrawer::drawString("press SPACE to continue...", -0.5, -2.6f, 0, GLUT_BITMAP_HELVETICA_10, flickeringColor->getColor());
 

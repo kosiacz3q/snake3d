@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<highscores>
+		<highscore>
+			<name>yeti</name>
+			<result>2323</result>
+		</highscore>
+		<highscore>
+			<name>kosi</name>
+			<result>423</result>
+		</highscore>
+		<highscore>
+			<name>unknown player</name>
+			<result>424</result>
+		</highscore>
+		<highscore>
+			<name>master</name>
+			<result>5322</result>
+		</highscore>
+	</highscores>
+</root>
+

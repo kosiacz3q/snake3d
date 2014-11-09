@@ -291,10 +291,10 @@ void StageGame::initObjects()
 
 void StageGame::performMouseDragg(int x, int y)
 {
-	mouse.setMousePosition(x, y);
+	//mouse.setMousePosition(x, y);
 
-	mainBrick->mainBrick->rotation.x -= (mouse.lastPosition.x - mouse.actualPosition.x);
-	mainBrick->mainBrick->rotation.y -= (mouse.lastPosition.y - mouse.actualPosition.y);
+	//mainBrick->mainBrick->rotation.x -= (mouse.lastPosition.x - mouse.actualPosition.x);
+	//mainBrick->mainBrick->rotation.y -= (mouse.lastPosition.y - mouse.actualPosition.y);
 }
 
 void StageGame::performMouseAction(int button, int state, int x, int y)

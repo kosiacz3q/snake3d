@@ -13,8 +13,9 @@ class FlickeringColor
 	private:
 		float* flickeringColor;
 		boost::posix_time::ptime lastUpdate;
-		int multipiler;
 		float cycleMiliseconds;
+		int multipiler;
+
 };
 
 #endif /* SRC_GUI_FLICKERINGCOLOR_H_ */
