@@ -56,6 +56,8 @@ void StringDrawer::strokeString(const std::string text, const float x, const flo
 	if (font == nullptr)
 		font = GLUT_STROKE_ROMAN;
 
+
+
 	BOOST_FOREACH(char c , text)
 	{
 		glutStrokeCharacter(font , c);

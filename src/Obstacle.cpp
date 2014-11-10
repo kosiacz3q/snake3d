@@ -33,7 +33,7 @@ void Obstacle::giveMessage(Message::MessagePack* msg)
 		{
 			Message::CollisionNotification* mc = (Message::CollisionNotification*) msg;
 			mc->otherObject->giveMessage(new Message::SimpleNotification(this->ID, Message::KILL));
-			GameStateManager::setProperty(Properties::DEATH_CAUSE , "You hit a fucking wall");
+			GameStateManager::setProperty(Properties::DEATH_CAUSE , "You hit a wall");
 		}
 			break;
 

@@ -20,6 +20,7 @@ StageDeathCause::~StageDeathCause()
 
 void StageDeathCause::init()
 {
+	glutSetCursor(GLUT_CURSOR_NONE);
 	deathCause = GameStateManager::getProperty(Properties::DEATH_CAUSE);
 	points = "Your result is " + GameStateManager::getProperty(Properties::NEW_HIGHSCORE_VALUE);
 }

@@ -21,6 +21,8 @@ StageIntro::~StageIntro()
 
 void StageIntro::init()
 {
+	glutSetCursor(GLUT_CURSOR_NONE);
+
 	Camera::reset();
 	Camera::setPosition(Vector3f(0., 0., 3.));
 

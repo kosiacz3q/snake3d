@@ -1,6 +1,8 @@
 #include "MainBrick.h"
-#include "ShapeGenerator.h"
+
 #include <math.h>
+
+#include "ShapeGenerator.h"
 #include "Camera.h"
 #include "gamestage/GameStateManager.h"
 #include "RandomPositionGenerator.h"
@@ -650,6 +652,7 @@ void MainBrick::updateAll(int time)
 
 					case Message::PLAYER_1_DEAD:
 						GameStateManager::setProperty(Properties::NEW_HIGHSCORE_INDICATOR, "true");
+						delete *iter;
 						GameStateManager::startDeathScreenState();
 						return;
 						break;
@@ -693,6 +696,8 @@ void MainBrick::updateAll(int time)
 void MainBrick::detectCollisions()
 {
 	Vector4f snakeHeadPosition = (--objects.at(snakeID)->tail.end())->position;
+
+	//collision with obstacles
 	for (MapObjects::const_iterator obj_iter = objects.begin(); obj_iter != objects.end(); ++obj_iter)
 	{
 		if (obj_iter->first != snakeID && obj_iter->second->hitable)
@@ -705,32 +710,48 @@ void MainBrick::detectCollisions()
 				}
 		}
 	}
+
+	//collision with ourself
+
+	if (objects.at(snakeID)->tail.size() > 3)
+	{
+		auto headSegment = (--objects.at(snakeID)->tail.end());
+		for (auto snakeSegment = objects.at(snakeID)->tail.begin(); snakeSegment != headSegment; ++snakeSegment)
+		{
+			if (snakeSegment->position == snakeHeadPosition)
+			{
+				GameStateManager::setProperty(Properties::DEATH_CAUSE, "You ate yourself...");
+				objects.at(snakeID)->giveMessage(new Message::SimpleNotification(0, Message::KILL));
+			}
+		}
+	}
+
 }
 
 void MainBrick::clockwiseTranslate()
 {
-	int tmp = translationTab[4];
-	translationTab[4] = translationTab[3];
-	translationTab[3] = translationTab[2];
-	translationTab[2] = translationTab[1];
-	translationTab[1] = tmp;
+int tmp = translationTab[4];
+translationTab[4] = translationTab[3];
+translationTab[3] = translationTab[2];
+translationTab[2] = translationTab[1];
+translationTab[1] = tmp;
 }
 
 void MainBrick::counterclockwiseTranslate()
 {
-	int tmp = translationTab[1];
-	translationTab[1] = translationTab[2];
-	translationTab[2] = translationTab[3];
-	translationTab[3] = translationTab[4];
-	translationTab[4] = tmp;
+int tmp = translationTab[1];
+translationTab[1] = translationTab[2];
+translationTab[2] = translationTab[3];
+translationTab[3] = translationTab[4];
+translationTab[4] = tmp;
 }
 
 void MainBrick::removeMapObject(int id)
 {
-	MapObject* obj = objects[id];
+MapObject* obj = objects[id];
 
-	RandomPositionGenerator::removeReservedPosition(obj->tail.begin()->position);
-	objects.erase(id);
-	delete obj;
+RandomPositionGenerator::removeReservedPosition(obj->tail.begin()->position);
+objects.erase(id);
+delete obj;
 
 }

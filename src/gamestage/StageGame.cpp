@@ -20,7 +20,6 @@ StageGame::StageGame()
 
 void StageGame::DataConnector::giveMessage(Message::MessagePack* msg)
 {
-
 	if (msg->msgType == Message::ADD_POINTS)
 	{
 		parent->pointsCounter->addPoints(((Message::AddPoints*) msg)->points);
@@ -151,6 +150,7 @@ void StageGame::close()
 
 void StageGame::init()
 {
+	glutSetCursor(GLUT_CURSOR_NONE);
 	Camera::reset();
 	Camera::setPosition(Vector3f(0., 0., 3.));
 
@@ -180,21 +180,32 @@ void StageGame::update()
 		if (acumulatedMiliseconds_objectSpawn >= 1000)
 		{
 
-			Gainer* gainer;
+			MapObject* gainer = nullptr;
 
-			int num = RandomPositionGenerator::getRandomNumber(0, 7);
+			int num = RandomPositionGenerator::getRandomNumber(0, 30);
 
 			switch (num)
 			{
 				case 0:
+				case 1:
+				case 2:
 					gainer = new Gainer(Message::BOOST_SPEED, 20);
 					gainer->tail.push_back(BrickProperties(RandomPositionGenerator::generate(mainBrick->wallDim, -1, 5, 20, 0), Colors::Red));
 					break;
-				case 7:
+				case 15:
+				case 16:
+				case 17:
 					gainer = new Gainer(Message::BOOST_JUMP, 20);
 					gainer->tail.push_back(BrickProperties(RandomPositionGenerator::generate(mainBrick->wallDim, -1, 5, 20, 0), Colors::Blue));
 					break;
 
+				case 25:
+				case 26:
+				{
+					gainer = new Obstacle();
+					gainer->tail.push_back(BrickProperties(RandomPositionGenerator::generate(mainBrick->wallDim, -1, 5, 20, 5), Colors::Black));
+				}
+				break;
 				default:
 					gainer = new Gainer(Message::CHANGE_LENGHT, 1);
 					gainer->tail.push_back(BrickProperties(RandomPositionGenerator::generate(mainBrick->wallDim, -1, 5, 20, 0), Colors::Goldenrod));
@@ -202,7 +213,7 @@ void StageGame::update()
 
 			}
 
-			;
+
 			mainBrick->addMapObject(gainer);
 			acumulatedMiliseconds_objectSpawn -= 1000;
 		}

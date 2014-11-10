@@ -38,10 +38,13 @@ class HighscoreHandler
 		void saveAll();
 		void add(const Highscore newHighscore);
 		std::vector<Highscore>& getHighscores();
+		std::string getUsername();
+		void setUsername(std::string newname);
 	private:
 		void sort();
 		void cut();
 		std::vector<Highscore> _highscores;
+		std::string _username;
 };
 
 #endif /* SRC_HIGHSCOREHANDLER_H_ */

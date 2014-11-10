@@ -35,15 +35,20 @@ class StageMenu : public GameStage
 	private:
 		int pick(float x, float y);
 		void initHighScores();
+		void startChangeNameState();
+		void endChangeNameState();
 
 		HighscoreHandler* highscoreHandler;
 		std::vector<TextInFrame> highscores;
 		SelectableTexturedButton* _buttonPlay;
+		SelectableTexturedButton* _buttonName;
 		SelectableTexturedButton* _buttonQuit;
 		SelfStabilizingRotator* mouseRotator;
 		Vector2f lastMousePositon;
 		GLdouble aspect = 1;
 
+		std::string _tempName;
+		bool _changngNameInProgress;
 };
 
 #endif /* MENU_H_ */

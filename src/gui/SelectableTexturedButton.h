@@ -1,7 +1,6 @@
 #ifndef SRC_GUI_SELECTABLETEXTUREDBUTTON_H_
 #define SRC_GUI_SELECTABLETEXTUREDBUTTON_H_
 
-
 #include "../Texture.h"
 #include "../Colors.h"
 #include "../Vectorf.h"
@@ -9,7 +8,7 @@
 class SelectableTexturedButton
 {
 	public:
-		SelectableTexturedButton(Vector3f posittion, Vector2f dimensions , std::string path,const float* selectionColor = Colors::Green);
+		SelectableTexturedButton(Vector3f posittion, Vector2f dimensions, std::string path, const float* selectionColor = Colors::Green);
 		virtual ~SelectableTexturedButton();
 
 		void setSelected(bool selected);
@@ -20,6 +19,7 @@ class SelectableTexturedButton
 
 		void drawSelection();
 		int getId();
+
 	private:
 		void initZAxis();
 

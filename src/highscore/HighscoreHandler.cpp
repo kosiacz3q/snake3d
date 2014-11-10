@@ -36,13 +36,27 @@ HighscoreHandler::~HighscoreHandler()
 
 }
 
+std::string HighscoreHandler::getUsername()
+{
+	return _username;
+}
+
+void HighscoreHandler::setUsername(std::string newname)
+{
+	_username = newname;
+	saveAll();
+}
+
 void HighscoreHandler::loadAll()
 {
 	_highscores.clear();
-	rapidxml::xml_document<> doc; //create xml_document object
-	rapidxml::file<> xmlFile("data"); //open file
-	doc.parse<0>(xmlFile.data()); //parse the contents of file
-	rapidxml::xml_node<>* root = doc.first_node("root"); //find our root node
+	rapidxml::xml_document<> doc;
+	rapidxml::file<> xmlFile("data");
+	doc.parse<0>(xmlFile.data());
+	rapidxml::xml_node<>* root = doc.first_node("root");
+
+	_username = root->first_node("username")->value();
+
 	rapidxml::xml_node<>* node1 = root->first_node("highscores")->first_node("highscore"); //->first_node("name"); //find our node1 node
 
 	while (node1 != NULL)
@@ -92,6 +106,10 @@ void HighscoreHandler::saveAll()
 //allocate root node
 	rapidxml::xml_node<>* root = doc.allocate_node(rapidxml::node_element, "root"); //node element is the type of node
 	doc.append_node(root);
+
+	rapidxml::xml_node<>* usernameNode = doc.allocate_node(rapidxml::node_element, "username");
+	usernameNode->value(_username.c_str());
+	root->append_node(usernameNode);
 
 	rapidxml::xml_node<>* rootHighscore = doc.allocate_node(rapidxml::node_element, "highscores");
 	root->append_node(rootHighscore);

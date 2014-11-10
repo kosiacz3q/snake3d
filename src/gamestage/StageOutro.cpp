@@ -7,6 +7,8 @@
 
 #include "StageOutro.h"
 
+#include <GL/freeglut.h>
+
 StageOutro::StageOutro()
 {
 
@@ -20,7 +22,7 @@ StageOutro::~StageOutro()
 
 void StageOutro::init()
 {
-
+	glutSetCursor(GLUT_CURSOR_NONE);
 }
 
 void StageOutro::close()

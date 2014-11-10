@@ -32,8 +32,7 @@ int main(int argc, char **argv)
 
 	GameStateManager::init();
 	GameStateManager::startIntroState();
-	//GameStateManager::setProperty("colorPerWall" , "yes");
-	GameStateManager::setProperty(Properties::PLAYER_NAME , "kosiacz3q");
+
 	glutMainLoop();
 	GameStateManager::close();
 
