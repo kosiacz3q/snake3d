@@ -9,11 +9,10 @@ class Obstacle: public MapObject
 		Obstacle();
 		virtual ~Obstacle();
 
-		//@override
 		void update(int mili);
-		//@override
+
 		void giveMessage(Message::MessagePack*);
-		//@override
+
 		void init()
 		{
 		}

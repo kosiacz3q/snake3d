@@ -16,11 +16,12 @@ class Gainer: public MapObject
 
 		void update(int miliseconds);
 
-		//@override
 		void giveMessage(Message::MessagePack*);
+
+	private:
 		Message::BoostType boostType;
 		int value;
-	private:
+
 		int collapsingTimer;
 		int innerTimer;
 		static const int jumpInterval = 700;

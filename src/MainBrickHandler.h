@@ -12,11 +12,11 @@
 typedef std::map<int, MapObject*> MapObjects;
 typedef std::vector<Message::MessagePack*> MessagesVector;
 
-class MainBrick: public IMessager
+class MainBrickHandler: public IMessager
 {
 	public:
-		MainBrick();
-		virtual ~MainBrick();
+		MainBrickHandler();
+		virtual ~MainBrickHandler();
 
 		void drawAll();
 		void updateAll(int time);
@@ -32,26 +32,35 @@ class MainBrick: public IMessager
 			this->parent = parent;
 		}
 
-		float halfOfMainBrick;
-		float halfOfObjectsBrick;
-		float objectsBrickDimm;
+		void init();
+
+		void setSnakeId(long int id);
+
+		void addObstacle(int count = 1);
+		void addGainers(Message::BoostType type,int count = 1);
+
+		Message::ControlInfo* getControlInfo()
+		{
+			return controlInfo;
+		}
+
+	private:
 		Brick* mainBrick;
 		Brick* objectsBrick;
 		int** wallDim;
 		Message::ControlInfo* controlInfo;
 		int snakeID;
 
-	private:
 		MapObjects objects;
 		MessagesVector messages;
 		IMessager* parent;
 		int translationTab[5];
 
 		void detectCollisions();
+
 		/*****DIRECTION TRANSLATION HANDLERS**********/
 		void clockwiseTranslate();
 		void counterclockwiseTranslate();
-
 };
 
 #endif /* MAINBRICK_H_ */

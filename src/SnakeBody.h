@@ -18,9 +18,14 @@ class SnakeBody: public MapObject
 		//@override
 		void update(int mili);
 
-		Vector3f headRealPos;
+		Vector3f getHeadRealPosition()
+		{
+			return headRealPos;
+		}
 
 	private:
+		Vector3f headRealPos;
+
 		long long totalMiliseconds;
 		int innerTimer1;
 		int jumpInterval;

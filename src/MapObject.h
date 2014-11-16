@@ -14,6 +14,28 @@ class MapObject: public Object, public IMessager
 	public:
 		MapObject(object_type type);
 
+		void setHitable(bool isHitable)
+		{
+			hitable = isHitable;
+		}
+
+		bool isHitable()
+		{
+			return hitable;
+		}
+
+		Tail& getTail()
+		{
+			return tail;
+		}
+
+		void setParent(IMessager* parent)
+		{
+			this->parent = parent;
+		}
+
+	protected:
+
 		bool hitable;
 		Tail tail;
 		IMessager* parent;

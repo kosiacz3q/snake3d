@@ -1,13 +1,12 @@
-#include "MainBrick.h"
-
 #include <math.h>
 
 #include "ShapeGenerator.h"
 #include "Camera.h"
 #include "gamestage/GameStateManager.h"
+#include "MainBrickHandler.h"
 #include "RandomPositionGenerator.h"
 
-MainBrick::~MainBrick()
+MainBrickHandler::~MainBrickHandler()
 {
 	delete mainBrick;
 	delete objectsBrick;
@@ -16,13 +15,11 @@ MainBrick::~MainBrick()
 	controlInfo = 0;
 }
 
-MainBrick::MainBrick()
+MainBrickHandler::MainBrickHandler()
 {
 	mainBrick = new Brick();
 	objectsBrick = new Brick();
-	halfOfMainBrick = 0;
-	halfOfObjectsBrick = 0;
-	objectsBrickDimm = (float) NULL;
+
 	wallDim = NULL;
 	messages = MessagesVector();
 	controlInfo = new Message::ControlInfo(0);
@@ -37,54 +34,55 @@ MainBrick::MainBrick()
 	translationTab[Direction::NONE] = Direction::NONE;
 }
 
-void MainBrick::drawAll()
+void MainBrickHandler::drawAll()
 {
 	mainBrick->draw();
 
 	glPushMatrix();
 
-	glTranslatef(this->mainBrick->position.x, this->mainBrick->position.y, this->mainBrick->position.z);
-	glRotatef(this->mainBrick->rotation.x, 0., 1., 0.);
-	glRotatef(this->mainBrick->rotation.y, 1., 0., 0.);
-	glRotatef(this->mainBrick->rotation.z, 0., 0., 1.);
+	glTranslatef(mainBrick->getPosition().x, mainBrick->getPosition().y, mainBrick->getPosition().z);
+	glRotatef(mainBrick->getRotation().x, 0., 1., 0.);
+	glRotatef(mainBrick->getRotation().y, 1., 0., 0.);
+	glRotatef(mainBrick->getRotation().z, 0., 0., 1.);
 
 	for (MapObjects::const_iterator obj_iter = objects.begin(); obj_iter != objects.end(); ++obj_iter)
 	{
-		for (Tail::const_iterator tail_iter = obj_iter->second->tail.begin(); tail_iter != obj_iter->second->tail.end(); ++tail_iter)
+		for (Tail::const_iterator tail_iter = obj_iter->second->getTail().begin(); tail_iter != obj_iter->second->getTail().end(); ++tail_iter)
 		{
-			ShapeGenerator::setColorOnSquare(objectsBrick->color_normal_vertex, 8, tail_iter->color);
+			objectsBrick->setColor(tail_iter->color);
+
 			glPushMatrix();
 
 			switch ((int) tail_iter->position.w)
 			{
 				case 1:
-					glTranslatef((tail_iter->position.x - wallDim[0][2]) * objectsBrickDimm, (wallDim[0][3] - tail_iter->position.y) * objectsBrickDimm,
-									halfOfMainBrick + halfOfObjectsBrick + (tail_iter->position.z * objectsBrickDimm));
+					glTranslatef((tail_iter->position.x - wallDim[0][2]) * objectsBrick->getEdgeLength(), (wallDim[0][3] - tail_iter->position.y) * objectsBrick->getEdgeLength(),
+									(mainBrick->getEdgeLength() / 2) + (objectsBrick->getEdgeLength() / 2) + (tail_iter->position.z * objectsBrick->getEdgeLength()));
 					break;
 				case 2:
-					glTranslatef(halfOfMainBrick + halfOfObjectsBrick + (tail_iter->position.z * objectsBrickDimm),
-									(wallDim[1][3] - tail_iter->position.y) * objectsBrickDimm, (tail_iter->position.x - wallDim[1][2]) * objectsBrickDimm);
+					glTranslatef((mainBrick->getEdgeLength() / 2) + (objectsBrick->getEdgeLength() / 2) + (tail_iter->position.z * objectsBrick->getEdgeLength()),
+									(wallDim[1][3] - tail_iter->position.y) * objectsBrick->getEdgeLength(), (tail_iter->position.x - wallDim[1][2]) * objectsBrick->getEdgeLength());
 					break;
 				case 3:
-					glTranslatef((tail_iter->position.x - wallDim[2][2]) * objectsBrickDimm, (wallDim[2][3] - tail_iter->position.y) * objectsBrickDimm,
-									-halfOfMainBrick - halfOfObjectsBrick - (tail_iter->position.z * objectsBrickDimm));
+					glTranslatef((tail_iter->position.x - wallDim[2][2]) * objectsBrick->getEdgeLength(), (wallDim[2][3] - tail_iter->position.y) * objectsBrick->getEdgeLength(),
+									-(mainBrick->getEdgeLength() / 2) - (objectsBrick->getEdgeLength() / 2) - (tail_iter->position.z * objectsBrick->getEdgeLength()));
 					break;
 
 				case 4:
-					glTranslatef(-halfOfMainBrick - halfOfObjectsBrick - (tail_iter->position.z * objectsBrickDimm),
-									(wallDim[3][3] - tail_iter->position.y) * objectsBrickDimm, (tail_iter->position.x - wallDim[3][2]) * objectsBrickDimm);
+					glTranslatef(-(mainBrick->getEdgeLength() / 2) - (objectsBrick->getEdgeLength() / 2) - (tail_iter->position.z * objectsBrick->getEdgeLength()),
+									(wallDim[3][3] - tail_iter->position.y) * objectsBrick->getEdgeLength(), (tail_iter->position.x - wallDim[3][2]) * objectsBrick->getEdgeLength());
 					break;
 
 				case 5:
-					glTranslatef((tail_iter->position.x - wallDim[4][2]) * objectsBrickDimm,
-									-halfOfMainBrick - halfOfObjectsBrick - (tail_iter->position.z * objectsBrickDimm),
-									(wallDim[4][3] - tail_iter->position.y) * objectsBrickDimm);
+					glTranslatef((tail_iter->position.x - wallDim[4][2]) * objectsBrick->getEdgeLength(),
+									-(mainBrick->getEdgeLength() / 2) - (objectsBrick->getEdgeLength() / 2) - (tail_iter->position.z * objectsBrick->getEdgeLength()),
+									(wallDim[4][3] - tail_iter->position.y) * objectsBrick->getEdgeLength());
 					break;
 
 				case 6:
-					glTranslatef((tail_iter->position.x - wallDim[5][2]) * objectsBrickDimm,
-									halfOfMainBrick + halfOfObjectsBrick + (tail_iter->position.z * objectsBrickDimm),
-									(wallDim[5][3] - tail_iter->position.y) * objectsBrickDimm);
+					glTranslatef((tail_iter->position.x - wallDim[5][2]) * objectsBrick->getEdgeLength(),
+									(mainBrick->getEdgeLength() / 2) + (objectsBrick->getEdgeLength() / 2) + (tail_iter->position.z * objectsBrick->getEdgeLength()),
+									(wallDim[5][3] - tail_iter->position.y) * objectsBrick->getEdgeLength());
 					break;
 				default:
 					break;
@@ -98,26 +96,26 @@ void MainBrick::drawAll()
 	glPopMatrix();
 }
 
-void MainBrick::addMapObject(MapObject* obj)
+void MainBrickHandler::addMapObject(MapObject* obj)
 {
 	objects.insert(std::make_pair(obj->getID(), obj));
-	RandomPositionGenerator::addReservedPosition(obj->tail.begin()->position);
-	obj->parent = this;
+	RandomPositionGenerator::addReservedPosition(obj->getTail().begin()->position);
+	obj->setParent(this);
 }
 
-void MainBrick::giveMessage(Message::MessagePack* mp)
+void MainBrickHandler::giveMessage(Message::MessagePack* mp)
 {
 	messages.push_back(mp);
 }
 
-void MainBrick::updateAll(int time)
+void MainBrickHandler::updateAll(int time)
 {
 	for (MapObjects::const_iterator iter = objects.begin(); iter != objects.end(); ++iter)
 	{
 		iter->second->update(time);
 	}
 
-	MainBrick::detectCollisions();
+	MainBrickHandler::detectCollisions();
 
 	for (MessagesVector::iterator iter = messages.begin();
 			iter != messages.end() && GameStateManager::getActualGameStage()->getGameStageEnum() == GAME_STAGE::GAME; ++iter)
@@ -592,45 +590,45 @@ void MainBrick::updateAll(int time)
 				{
 					case 1:
 					{
-						realPos.z = halfOfMainBrick - halfOfObjectsBrick;
-						realPos.x = (mgrp->head.x * objectsBrickDimm) - halfOfMainBrick - halfOfObjectsBrick;
-						realPos.y = halfOfMainBrick - (mgrp->head.y * objectsBrickDimm);
+						realPos.z = (mainBrick->getEdgeLength() / 2) - (objectsBrick->getEdgeLength() / 2);
+						realPos.x = (mgrp->head.x * objectsBrick->getEdgeLength()) - (mainBrick->getEdgeLength() / 2) - (objectsBrick->getEdgeLength() / 2);
+						realPos.y = (mainBrick->getEdgeLength() / 2) - (mgrp->head.y * objectsBrick->getEdgeLength());
 					}
 						break;
 					case 2:
 					{ //CONFIRMED
-						realPos.x = halfOfMainBrick + halfOfObjectsBrick;
-						realPos.y = halfOfMainBrick - (mgrp->head.y * objectsBrickDimm);
-						realPos.z = (mgrp->head.x * objectsBrickDimm) - halfOfMainBrick;
+						realPos.x = (mainBrick->getEdgeLength() / 2) + (objectsBrick->getEdgeLength() / 2);
+						realPos.y = (mainBrick->getEdgeLength() / 2) - (mgrp->head.y * objectsBrick->getEdgeLength());
+						realPos.z = (mgrp->head.x * objectsBrick->getEdgeLength()) - (mainBrick->getEdgeLength() / 2);
 					}
 						break;
 					case 3:
 					{
-						realPos.z = -halfOfMainBrick;
-						realPos.x = (mgrp->head.x * objectsBrickDimm) - halfOfMainBrick - halfOfObjectsBrick;
-						realPos.y = halfOfMainBrick - (mgrp->head.y * objectsBrickDimm);
+						realPos.z = -(mainBrick->getEdgeLength() / 2);
+						realPos.x = (mgrp->head.x * objectsBrick->getEdgeLength()) - (mainBrick->getEdgeLength() / 2) - (objectsBrick->getEdgeLength() / 2);
+						realPos.y = (mainBrick->getEdgeLength() / 2) - (mgrp->head.y * objectsBrick->getEdgeLength());
 					}
 						break;
 					case 4:
 					{ //CONFIRMED
-						realPos.x = -halfOfMainBrick - halfOfObjectsBrick;
-						realPos.y = halfOfMainBrick - (mgrp->head.y * objectsBrickDimm);
-						realPos.z = (mgrp->head.x * objectsBrickDimm) - halfOfMainBrick;
+						realPos.x = -(mainBrick->getEdgeLength() / 2) - (objectsBrick->getEdgeLength() / 2);
+						realPos.y = (mainBrick->getEdgeLength() / 2) - (mgrp->head.y * objectsBrick->getEdgeLength());
+						realPos.z = (mgrp->head.x * objectsBrick->getEdgeLength()) - (mainBrick->getEdgeLength() / 2);
 					}
 						break;
 
 					case 5:
 					{ //CONFIRMED
-						realPos.y = -halfOfMainBrick - objectsBrickDimm;
-						realPos.x = -halfOfMainBrick + (mgrp->head.x * objectsBrickDimm) + halfOfObjectsBrick;
-						realPos.z = halfOfMainBrick - (mgrp->head.y * objectsBrickDimm) - objectsBrickDimm;
+						realPos.y = -(mainBrick->getEdgeLength() / 2) - objectsBrick->getEdgeLength();
+						realPos.x = -(mainBrick->getEdgeLength() / 2) + (mgrp->head.x * objectsBrick->getEdgeLength()) + (objectsBrick->getEdgeLength() / 2);
+						realPos.z = (mainBrick->getEdgeLength() / 2) - (mgrp->head.y * objectsBrick->getEdgeLength()) - objectsBrick->getEdgeLength();
 					}
 						break;
 					case 6:
 					{ //CONFIRMED
-						realPos.y = halfOfMainBrick;
-						realPos.x = (mgrp->head.x * objectsBrickDimm) - halfOfMainBrick + halfOfObjectsBrick;
-						realPos.z = halfOfMainBrick - (mgrp->head.y * objectsBrickDimm) - objectsBrickDimm;
+						realPos.y = (mainBrick->getEdgeLength() / 2);
+						realPos.x = (mgrp->head.x * objectsBrick->getEdgeLength()) - (mainBrick->getEdgeLength() / 2) + (objectsBrick->getEdgeLength() / 2);
+						realPos.z = (mainBrick->getEdgeLength() / 2) - (mgrp->head.y * objectsBrick->getEdgeLength()) - objectsBrick->getEdgeLength();
 					}
 						break;
 					default:
@@ -646,7 +644,7 @@ void MainBrick::updateAll(int time)
 				switch (((Message::SimpleNotification*) *iter)->notification)
 				{
 					case Message::DISPOSE_ME_REQUEST:
-						MainBrick::removeMapObject((*iter)->senderID);
+						MainBrickHandler::removeMapObject((*iter)->senderID);
 
 						break;
 
@@ -689,20 +687,20 @@ void MainBrick::updateAll(int time)
 		cif->glutKey = controlInfo->glutKey;
 		objects[snakeID]->giveMessage(cif);
 		controlInfo->reset();
-		Camera::updatePosition(((SnakeBody*) (objects[snakeID]))->headRealPos);
+		Camera::updatePosition(((SnakeBody*) (objects[snakeID]))->getHeadRealPosition());
 	}
 }
 
-void MainBrick::detectCollisions()
+void MainBrickHandler::detectCollisions()
 {
-	Vector4f snakeHeadPosition = (--objects.at(snakeID)->tail.end())->position;
+	Vector4f snakeHeadPosition = (--objects.at(snakeID)->getTail().end())->position;
 
 	//collision with obstacles
 	for (MapObjects::const_iterator obj_iter = objects.begin(); obj_iter != objects.end(); ++obj_iter)
 	{
-		if (obj_iter->first != snakeID && obj_iter->second->hitable)
+		if (obj_iter->first != snakeID && obj_iter->second->isHitable())
 		{
-			for (Tail::iterator tailIter = obj_iter->second->tail.begin(); tailIter != obj_iter->second->tail.end(); ++tailIter)
+			for (Tail::iterator tailIter = obj_iter->second->getTail().begin(); tailIter != obj_iter->second->getTail().end(); ++tailIter)
 				if (tailIter->position == snakeHeadPosition)
 				{
 					objects.at(snakeID)->giveMessage(new Message::CollisionNotification(0, (IMessager*) ((obj_iter->second))));
@@ -713,10 +711,10 @@ void MainBrick::detectCollisions()
 
 	//collision with ourself
 
-	if (objects.at(snakeID)->tail.size() > 3)
+	if (objects.at(snakeID)->getTail().size() > 3)
 	{
-		auto headSegment = (--objects.at(snakeID)->tail.end());
-		for (auto snakeSegment = objects.at(snakeID)->tail.begin(); snakeSegment != headSegment; ++snakeSegment)
+		auto headSegment = (--objects.at(snakeID)->getTail().end());
+		for (auto snakeSegment = objects.at(snakeID)->getTail().begin(); snakeSegment != headSegment; ++snakeSegment)
 		{
 			if (snakeSegment->position == snakeHeadPosition)
 			{
@@ -728,30 +726,123 @@ void MainBrick::detectCollisions()
 
 }
 
-void MainBrick::clockwiseTranslate()
+void MainBrickHandler::clockwiseTranslate()
 {
-int tmp = translationTab[4];
-translationTab[4] = translationTab[3];
-translationTab[3] = translationTab[2];
-translationTab[2] = translationTab[1];
-translationTab[1] = tmp;
+	int tmp = translationTab[4];
+	translationTab[4] = translationTab[3];
+	translationTab[3] = translationTab[2];
+	translationTab[2] = translationTab[1];
+	translationTab[1] = tmp;
 }
 
-void MainBrick::counterclockwiseTranslate()
+void MainBrickHandler::counterclockwiseTranslate()
 {
-int tmp = translationTab[1];
-translationTab[1] = translationTab[2];
-translationTab[2] = translationTab[3];
-translationTab[3] = translationTab[4];
-translationTab[4] = tmp;
+	int tmp = translationTab[1];
+	translationTab[1] = translationTab[2];
+	translationTab[2] = translationTab[3];
+	translationTab[3] = translationTab[4];
+	translationTab[4] = tmp;
 }
 
-void MainBrick::removeMapObject(int id)
+void MainBrickHandler::removeMapObject(int id)
 {
-MapObject* obj = objects[id];
+	MapObject* obj = objects[id];
 
-RandomPositionGenerator::removeReservedPosition(obj->tail.begin()->position);
-objects.erase(id);
-delete obj;
+	RandomPositionGenerator::removeReservedPosition(obj->getTail().begin()->position);
+	objects.erase(id);
+	delete obj;
 
+}
+
+void MainBrickHandler::init()
+{
+	mainBrick->setEdgeLength(2.1f);
+	objectsBrick->setEdgeLength(0.1f);
+
+	mainBrick->init();
+	objectsBrick->init();
+
+	mainBrick->setPosition(Vector3f(0., 0., 0.));
+
+	mainBrick->goLsdGo();
+
+	wallDim = new int*[6];
+	for (int i = 0; i < 6; ++i)
+		wallDim[i] = new int[4]; //width height centerX  centerY
+
+	wallDim[0][0] = 23; //x max
+	wallDim[0][1] = 23; //y max
+	wallDim[0][2] = 12 - 1; // x center
+	wallDim[0][3] = 12 - 1; // y center
+
+	wallDim[1][0] = 21;
+	wallDim[1][1] = 23;
+	wallDim[1][2] = 11 - 1;
+	wallDim[1][3] = 12 - 1;
+
+	wallDim[2][0] = 23;
+	wallDim[2][1] = 23;
+	wallDim[2][2] = 12 - 1;
+	wallDim[2][3] = 12 - 1;
+
+	wallDim[3][0] = 21;
+	wallDim[3][1] = 23;
+	wallDim[3][2] = 11 - 1;
+	wallDim[3][3] = 12 - 1;
+
+	wallDim[4][0] = 21;
+	wallDim[4][1] = 21;
+	wallDim[4][2] = 11 - 1;
+	wallDim[4][3] = 11 - 1;
+
+	wallDim[5][0] = 21;
+	wallDim[5][1] = 21;
+	wallDim[5][2] = 11 - 1;
+	wallDim[5][3] = 11 - 1;
+}
+
+void MainBrickHandler::setSnakeId(long int id)
+{
+	snakeID = id;
+}
+
+void MainBrickHandler::addObstacle(int count)
+{
+	for (int i = 0; i < count; ++i)
+	{
+		Obstacle* obstacle = new Obstacle();
+		obstacle->getTail().push_back(BrickProperties(RandomPositionGenerator::generate(wallDim, -1, 5, 20, i * 5), Colors::Black));
+		addMapObject(obstacle);
+	}
+}
+
+void MainBrickHandler::addGainers(Message::BoostType type, int count)
+{
+	const float* color;
+	int power = 20;
+	switch (type)
+	{
+		case Message::BOOST_SPEED:
+			color = Colors::Red;
+			break;
+		case Message::BOOST_JUMP:
+			color = Colors::Yellow;
+			break;
+		case Message::CHANGE_LENGHT:
+			color = Colors::Gray;
+			power = 1;
+			break;
+		default:
+			color = Colors::Gray;
+	}
+
+	MapObject* gainer = nullptr;
+
+	for (int i = 0; i < count; ++i)
+	{
+		gainer = new Gainer(type, power);
+		gainer->getTail().push_back(BrickProperties(RandomPositionGenerator::generate(wallDim, -1, 5, 20, i * 20), color));
+	}
+
+	addMapObject(gainer);
 }

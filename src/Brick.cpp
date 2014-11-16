@@ -1,20 +1,22 @@
 #include "Brick.h"
+#include "ShapeGenerator.h"
 
 Brick::Brick()
+	:color_normal_vertex(nullptr),
+	 indexTable(nullptr),
+	 edgelength(1)
 {
-	color_normal_vertex = NULL;
-	indexTable = NULL;
 	position = Vector3f(0, 0, 0);
 	rotation = Vector3f(0, 0, 0);
 }
 
 Brick::~Brick()
 {
-	if (color_normal_vertex != NULL)
-		delete color_normal_vertex;
+	if (color_normal_vertex != nullptr)
+		delete[] color_normal_vertex;
 
-	if (indexTable != NULL)
-		delete indexTable;
+	if (indexTable != nullptr)
+		delete[] indexTable;
 }
 
 void Brick::draw()
@@ -41,7 +43,11 @@ void Brick::update()
 
 void Brick::init()
 {
+	color_normal_vertex = new float[80];
+	indexTable = new GLubyte[36];
 
+	ShapeGenerator::getSquare(color_normal_vertex, edgelength, Colors::HotPink);
+	ShapeGenerator::setStandartSquareIndexTable(indexTable);
 }
 
 void Brick::setPosition(const Vector3f& pos)
@@ -62,4 +68,19 @@ void Brick::setRotation(const Vector3f& rot)
 void Brick::rotate(const Vector3f& shrot)
 {
 	this->rotation += shrot;
+}
+
+void Brick::setColor(const float* color)
+{
+	ShapeGenerator::setColorOnSquare(color_normal_vertex, 8, color);
+}
+
+void Brick::setEdgeLength(float length)
+{
+	edgelength = length;
+}
+
+void Brick::goLsdGo()
+{
+	ShapeGenerator::LSDonGL_C4F_N3F_V3F(color_normal_vertex, 8);
 }

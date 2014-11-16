@@ -11,13 +11,22 @@ class MouseHandler
 
 		void setMousePosition(const int& x, const int& y);
 
+		void setLeftButtonState(int state)
+		{
+			leftButtonState = state;
+		}
+
+		void setRightButtonState(int state)
+		{
+			rightButtonState = state;
+		}
+
+	private:
 		int leftButtonState;
 		int rightButtonState;
 
 		Vector2f actualPosition;
 		Vector2f lastPosition;
-
-	private:
 
 };
 

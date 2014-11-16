@@ -5,7 +5,6 @@
 #include "../RandomPositionGenerator.h"
 #include "GameStateManager.h"
 
-
 StageGame::StageGame()
 {
 	gameObjects = ObjectContainer();
@@ -13,7 +12,7 @@ StageGame::StageGame()
 	mainBrick = nullptr;
 	playerSnake = nullptr;
 	acumulatedMiliseconds_objectSpawn = 0;
-	pointsCounter =  nullptr;
+	pointsCounter = nullptr;
 	dataConnector = nullptr;
 	abilitiesIndicator = nullptr;
 }
@@ -77,24 +76,24 @@ void StageGame::performKeyboardInput(unsigned char key, int x, int y)
 	if ((int) key < 97)
 		key += 32;
 
-	mainBrick->controlInfo->key = key;
+	mainBrick->getControlInfo()->key = key;
 
 	switch (key)
 	{
 		case 'a':
-			mainBrick->controlInfo->glutKey = GLUT_KEY_LEFT;
+			mainBrick->getControlInfo()->glutKey = GLUT_KEY_LEFT;
 			break;
 
 		case 'w':
-			mainBrick->controlInfo->glutKey = GLUT_KEY_UP;
+			mainBrick->getControlInfo()->glutKey = GLUT_KEY_UP;
 			break;
 
 		case 'd':
-			mainBrick->controlInfo->glutKey = GLUT_KEY_RIGHT;
+			mainBrick->getControlInfo()->glutKey = GLUT_KEY_RIGHT;
 			break;
 
 		case 's':
-			mainBrick->controlInfo->glutKey = GLUT_KEY_DOWN;
+			mainBrick->getControlInfo()->glutKey = GLUT_KEY_DOWN;
 			break;
 		case 'q':
 			GameStateManager::startMenuState();
@@ -108,7 +107,7 @@ void StageGame::performKeyboardInput(unsigned char key, int x, int y)
 void StageGame::performSpecialKeyboardInput(int key, int x, int y)
 {
 
-	mainBrick->controlInfo->glutKey = (short) key;
+	mainBrick->getControlInfo()->glutKey = (short) key;
 
 }
 
@@ -129,7 +128,7 @@ void StageGame::reshape(int width, int height)
 
 void StageGame::close()
 {
-	GameStateManager::setProperty(Properties::NEW_HIGHSCORE_VALUE , boost::lexical_cast<std::string>(pointsCounter->getValue()));
+	GameStateManager::setProperty(Properties::NEW_HIGHSCORE_VALUE, boost::lexical_cast<std::string>(pointsCounter->getValue()));
 
 	delete mainBrick;
 	mainBrick = nullptr;
@@ -140,12 +139,12 @@ void StageGame::close()
 
 	SnakeAbilities::free();
 	RotaryCounter::free();
+
 	delete pointsCounter;
 	delete dataConnector;
 	delete abilitiesIndicator;
 
-	dataConnector = 0;
-
+	dataConnector = nullptr;
 }
 
 void StageGame::init()
@@ -179,42 +178,29 @@ void StageGame::update()
 
 		if (acumulatedMiliseconds_objectSpawn >= 1000)
 		{
-
-			MapObject* gainer = nullptr;
-
-			int num = RandomPositionGenerator::getRandomNumber(0, 30);
-
-			switch (num)
+			switch (RandomPositionGenerator::getRandomNumber(0, 30))
 			{
 				case 0:
 				case 1:
 				case 2:
-					gainer = new Gainer(Message::BOOST_SPEED, 20);
-					gainer->tail.push_back(BrickProperties(RandomPositionGenerator::generate(mainBrick->wallDim, -1, 5, 20, 0), Colors::Red));
+					mainBrick->addGainers(Message::BOOST_SPEED);
 					break;
+
 				case 15:
 				case 16:
 				case 17:
-					gainer = new Gainer(Message::BOOST_JUMP, 20);
-					gainer->tail.push_back(BrickProperties(RandomPositionGenerator::generate(mainBrick->wallDim, -1, 5, 20, 0), Colors::Blue));
+					mainBrick->addGainers(Message::BOOST_JUMP);
 					break;
 
 				case 25:
 				case 26:
-				{
-					gainer = new Obstacle();
-					gainer->tail.push_back(BrickProperties(RandomPositionGenerator::generate(mainBrick->wallDim, -1, 5, 20, 5), Colors::Black));
-				}
-				break;
-				default:
-					gainer = new Gainer(Message::CHANGE_LENGHT, 1);
-					gainer->tail.push_back(BrickProperties(RandomPositionGenerator::generate(mainBrick->wallDim, -1, 5, 20, 0), Colors::Goldenrod));
+					mainBrick->addObstacle();
 					break;
 
+				default:
+					mainBrick->addGainers(Message::CHANGE_LENGHT);
 			}
 
-
-			mainBrick->addMapObject(gainer);
 			acumulatedMiliseconds_objectSpawn -= 1000;
 		}
 
@@ -237,67 +223,16 @@ void StageGame::initObjects()
 	SnakeAbilities::init();
 
 	//Main Brick
-	mainBrick = new MainBrick();
+	mainBrick = new MainBrickHandler();
 	mainBrick->setParent(dataConnector);
-	mainBrick->mainBrick->color_normal_vertex = new float[80];
-	mainBrick->mainBrick->indexTable = new GLubyte[36];
-	mainBrick->objectsBrick->color_normal_vertex = new float[80];
-	mainBrick->objectsBrick->indexTable = new GLubyte[36];
-	mainBrick->mainBrick->setPosition(Vector3f(0., 0., 0.));
-	ShapeGenerator::getSquare(mainBrick->mainBrick->color_normal_vertex, 2.1, Colors::Aqua);
-	mainBrick->halfOfMainBrick = 1.05;
-	ShapeGenerator::getSquare(mainBrick->objectsBrick->color_normal_vertex, .1, Colors::HotPink);
-	mainBrick->halfOfObjectsBrick = .05;
-	mainBrick->objectsBrickDimm = .1;
-	ShapeGenerator::setStandartSquareIndexTable(mainBrick->mainBrick->indexTable);
-	ShapeGenerator::setStandartSquareIndexTable(mainBrick->objectsBrick->indexTable);
-	ShapeGenerator::LSDonGL_C4F_N3F_V3F(mainBrick->mainBrick->color_normal_vertex, 8);
 
-	mainBrick->wallDim = new int*[6];
-	for (int i = 0; i < 6; ++i)
-		mainBrick->wallDim[i] = new int[4]; //width height centerX  centerY
-
-	mainBrick->wallDim[0][0] = 23; //x max
-	mainBrick->wallDim[0][1] = 23; //y max
-	mainBrick->wallDim[0][2] = 12 - 1; // x center
-	mainBrick->wallDim[0][3] = 12 - 1; // y center
-
-	mainBrick->wallDim[1][0] = 21;
-	mainBrick->wallDim[1][1] = 23;
-	mainBrick->wallDim[1][2] = 11 - 1;
-	mainBrick->wallDim[1][3] = 12 - 1;
-
-	mainBrick->wallDim[2][0] = 23;
-	mainBrick->wallDim[2][1] = 23;
-	mainBrick->wallDim[2][2] = 12 - 1;
-	mainBrick->wallDim[2][3] = 12 - 1;
-
-	mainBrick->wallDim[3][0] = 21;
-	mainBrick->wallDim[3][1] = 23;
-	mainBrick->wallDim[3][2] = 11 - 1;
-	mainBrick->wallDim[3][3] = 12 - 1;
-
-	mainBrick->wallDim[4][0] = 21;
-	mainBrick->wallDim[4][1] = 21;
-	mainBrick->wallDim[4][2] = 11 - 1;
-	mainBrick->wallDim[4][3] = 11 - 1;
-
-	mainBrick->wallDim[5][0] = 21;
-	mainBrick->wallDim[5][1] = 21;
-	mainBrick->wallDim[5][2] = 11 - 1;
-	mainBrick->wallDim[5][3] = 11 - 1;
+	mainBrick->init();
 
 	playerSnake = new SnakeBody(Vector4f(11, 11, 0, 1));
-	mainBrick->snakeID = playerSnake->getID();
+	mainBrick->setSnakeId(playerSnake->getID());
 	mainBrick->addMapObject(playerSnake);
 
-	Obstacle* obstacle;
-	for (int i = 0; i < 10; ++i)
-	{
-		obstacle = new Obstacle();
-		obstacle->tail.push_back(BrickProperties(RandomPositionGenerator::generate(mainBrick->wallDim, -1, 5, 20, i * 5), Colors::Black));
-		mainBrick->addMapObject(obstacle);
-	}
+	mainBrick->addObstacle(10);
 }
 
 void StageGame::performMouseDragg(int x, int y)
@@ -311,9 +246,9 @@ void StageGame::performMouseDragg(int x, int y)
 void StageGame::performMouseAction(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON)
-		mouse.leftButtonState = state;
+		mouse.setLeftButtonState(state);
 	else if (button == GLUT_RIGHT_BUTTON)
-		mouse.rightButtonState = state;
+		mouse.setRightButtonState(state);
 
 	mouse.setMousePosition(x, y);
 }

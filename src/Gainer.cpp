@@ -30,6 +30,7 @@ void Gainer::giveMessage(Message::MessagePack* msg)
 		{
 			if (((Message::SimpleNotification*) msg)->notification == Message::KILL)
 			{
+
 				hitable = false;
 			}
 		}

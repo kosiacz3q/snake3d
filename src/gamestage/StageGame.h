@@ -2,8 +2,8 @@
 #define GAME_H
 #include <map>
 
-#include "../MainBrick.h"
 #include "../Camera.h"
+#include "../MainBrickHandler.h"
 #include "../MouseHandler.h"
 #include "../RotaryCounter.h"
 #include "../SnakeAbilities.h"
@@ -46,9 +46,8 @@ class StageGame : public GameStage
 		void performMouseMove(int x, int y);
 		void initObjects();
 
-
 	private:
-		MainBrick* mainBrick;
+		MainBrickHandler* mainBrick;
 		SnakeBody* playerSnake;
 		SnakeAbilities* abilitiesIndicator;
 		boost::posix_time::ptime lastUpdate;
