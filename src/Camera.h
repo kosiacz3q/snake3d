@@ -5,7 +5,7 @@
 
 #include "Vectorf.h"
 
-STATIC class Camera
+class Camera
 {
 	public:
 		static void updatePosition(Vector3f snakeHead);

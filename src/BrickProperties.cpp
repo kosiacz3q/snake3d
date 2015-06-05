@@ -9,5 +9,5 @@ BrickProperties::BrickProperties(Vector4f pos, const GLfloat* col)
 BrickProperties::BrickProperties()
 {
 	this->position = Vector4f();
-	this->color = NULL;
+	this->color = nullptr;
 }

@@ -3,7 +3,7 @@
 
 #include "MessagePack.h"
 
-interface IMessager
+class IMessager
 {
 	public:
 		virtual ~IMessager();

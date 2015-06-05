@@ -21,7 +21,8 @@ Brick::~Brick()
 
 void Brick::draw()
 {
-
+	//TODO
+	/*
 	glPushMatrix();
 
 	glTranslatef(this->position.x, this->position.y, this->position.z);
@@ -33,7 +34,7 @@ void Brick::draw()
 	glInterleavedArrays(GL_C4F_N3F_V3F, 0, this->color_normal_vertex);
 	glDrawElements( GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, this->indexTable);
 
-	glPopMatrix();
+	glPopMatrix();*/
 }
 
 void Brick::update()

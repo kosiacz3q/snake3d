@@ -1,13 +1,15 @@
-#include <GL/glut.h>
+//#include <GL/glut.h>
 
 #include "MouseHandler.h"
 
 MouseHandler::MouseHandler()
 {
+	//TODO
+	/*
 	this->leftButtonState = GLUT_UP;
 	this->rightButtonState = GLUT_UP;
 	this->actualPosition = Vector2f();
-	this->lastPosition = this->actualPosition;
+	this->lastPosition = this->actualPosition;*/
 }
 
 MouseHandler::~MouseHandler()
