@@ -1,5 +1,6 @@
 #include "StageMenu.h"
 
+#include <boost/foreach.hpp>
 #include <cstdio>
 
 #include "../Camera.h"
@@ -27,8 +28,7 @@ StageMenu::~StageMenu()
 
 void StageMenu::init()
 {
-	//TODO
-	//glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+	glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
 	initHighScores();
 	GameStateManager::setProperty(Properties::PLAYER_NAME, highscoreHandler->getUsername());
 	_tempName = GameStateManager::getProperty(Properties::PLAYER_NAME);
@@ -96,7 +96,7 @@ void StageMenu::initHighScores()
 	highscores.push_back(TextInFrame(Vector3f(-0.3f, 1.9f, 0), Vector2f(4, 0.3), "                     highscores", Colors::Gray));
 
 	int innerCounter = 0;
-	for (auto highscore : highscoreHandler->getHighscores())
+	BOOST_FOREACH(Highscore highscore, highscoreHandler->getHighscores())
 	{
 		switch (innerCounter)
 		{
@@ -141,8 +141,6 @@ void StageMenu::performMouseAction(int button, int state, int x, int y)
 
 void StageMenu::reshape(int width, int height)
 {
-	//TODO draw
-	/*
 	glViewport(0, 0, width, height);
 
 	glMatrixMode( GL_PROJECTION);
@@ -152,7 +150,7 @@ void StageMenu::reshape(int width, int height)
 	if (height > 0)
 		aspect = width / (GLdouble) height;
 
-	gluPerspective(90, aspect, 1.0, 5.0);*/
+	gluPerspective(90, aspect, 1.0, 5.0);
 }
 
 void StageMenu::performMouseMove(int x, int y)
@@ -206,8 +204,6 @@ GAME_STAGE::GAME_STAGE StageMenu::getGameStageEnum()
 
 void StageMenu::drawAll()
 {
-	//TODO
-	/*
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -229,7 +225,7 @@ void StageMenu::drawAll()
 	glPopMatrix();
 
 	glEnable( GL_DEPTH_TEST);
-
+	/*****<OBJECT DRAWING>*******/
 	_buttonPlay->draw();
 	_buttonQuit->draw();
 	_buttonName->draw();
@@ -240,20 +236,18 @@ void StageMenu::drawAll()
 
 	glFlush();
 
-	glutSwapBuffers();*/
+	glutSwapBuffers();
 }
 
 void StageMenu::startChangeNameState()
 {
-	//TODO
-	//glutSetCursor(GLUT_CURSOR_NONE);
+	glutSetCursor(GLUT_CURSOR_NONE);
 	_changngNameInProgress = true;
 }
 
 void StageMenu::endChangeNameState()
 {
-	//TODO
-	//glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+	glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
 	_changngNameInProgress = false;
 	_buttonName->setSelected(false);
 
@@ -274,8 +268,7 @@ void StageMenu::update()
 
 int StageMenu::pick(float x, float y)
 {
-	//TODO rewrite
-	/*
+//START
 	GLint viewport[4];
 	float ratio;
 
@@ -297,7 +290,7 @@ int StageMenu::pick(float x, float y)
 	gluPerspective(90, ratio, 1.0, 5.0);
 	glMatrixMode(GL_MODELVIEW);
 
-
+//DRAW
 	glLoadIdentity();
 
 	Camera::setStaticVision();
@@ -306,7 +299,7 @@ int StageMenu::pick(float x, float y)
 	_buttonName->drawSelection();
 	_buttonQuit->drawSelection();
 
-
+//STOP
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
@@ -317,7 +310,7 @@ int StageMenu::pick(float x, float y)
 	{
 		return (int) selectBuf[3];
 	}
-	*/
+
 	return -1;
 }
 

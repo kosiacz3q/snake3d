@@ -7,7 +7,7 @@
 #include "GameStage.h"
 #include "PropertiesEnumerations.hpp"
 
-class GameStateManager
+STATIC class GameStateManager
 {
 	public:
 		static void init();

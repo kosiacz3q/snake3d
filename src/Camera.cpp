@@ -39,7 +39,7 @@ void Camera::updatePosition(Vector3f snakeHead)
 		lastSnakeHead = snakeHead;
 	}
 
-	float c = pow(snakeHead.x, 2.f) + pow(snakeHead.y, 2.f) + pow(snakeHead.z, 2.f);
+	float c = pow(snakeHead.x, 2.) + pow(snakeHead.y, 2.) + pow(snakeHead.z, 2.);
 	float t;
 
 	if (c != 0)
@@ -67,19 +67,16 @@ void Camera::updatePosition(Vector3f snakeHead)
 
 void Camera::setVision()
 {
-	//TODO draw
-	/*
 	gluLookAt(position.x, position.y, position.z, lookPoint.x, lookPoint.y, lookPoint.z, verticalTurn.x, verticalTurn.y, verticalTurn.z);
 
 	glRotatef(Camera::rotate.x, 0., 1., 0.);
 	glRotatef(Camera::rotate.y, 1., 0., 0.);
-	glRotatef(Camera::rotate.z, 0., 0., 1.);*/
+	glRotatef(Camera::rotate.z, 0., 0., 1.);
 }
 
 void Camera::setStaticVision()
 {
-	//TODO draw
-	//gluLookAt(0, 0, 3, 0, 0, 0, 0, 1., 0);
+	gluLookAt(0, 0, 3, 0, 0, 0, 0, 1., 0);
 }
 
 void Camera::setPosition(Vector3f pos)
