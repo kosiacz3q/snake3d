@@ -9,7 +9,7 @@ class TextInFrame
 {
 	public:
 		TextInFrame(Vector3f position , Vector2f dimmensions, std::string text,const float* frameColor);
-		virtual ~TextInFrame();
+		virtual ~TextInFrame() { };
 		void draw();
 
 
