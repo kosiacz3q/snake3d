@@ -55,7 +55,7 @@ void HighscoreHandler::loadAll()
 	doc.parse<0>(xmlFile.data());
 	rapidxml::xml_node<>* root = doc.first_node("root");
 
-	_username = root->first_node("username")->value();
+	// _username = root->first_node("username")->value();
 
 	rapidxml::xml_node<>* node1 = root->first_node("highscores")->first_node("highscore"); //->first_node("name"); //find our node1 node
 
@@ -114,12 +114,13 @@ void HighscoreHandler::saveAll()
 	rapidxml::xml_node<>* rootHighscore = doc.allocate_node(rapidxml::node_element, "highscores");
 	root->append_node(rootHighscore);
 
-	BOOST_FOREACH( Highscore highscore, _highscores )
+	BOOST_FOREACH(const Highscore& highscore, _highscores )
 	{
 		rapidxml::xml_node<>* nodeHighscore = doc.allocate_node(rapidxml::node_element, "highscore");
 		rootHighscore->append_node(nodeHighscore);
 
 		rapidxml::xml_node<>* nodeName = doc.allocate_node(rapidxml::node_element, "name");
+		printf("%s\n", highscore.name.c_str());
 		nodeName->value(highscore.name.c_str());
 		nodeHighscore->append_node(nodeName);
 
@@ -131,7 +132,7 @@ void HighscoreHandler::saveAll()
 	std::string xml_as_string;
 	rapidxml::print(back_inserter(xml_as_string), doc); //print formatted XML to a string
 
-	out << xml_as_string << "\0";
+	out << xml_as_string << "\n";
 	out.close();
 }
 

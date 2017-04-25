@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<username>player</username>
+	<username/>
 	<highscores>
 		<highscore>
 			<name>master</name>
@@ -11,14 +11,6 @@
 			<result>2323</result>
 		</highscore>
 		<highscore>
-			<name>izunixdx</name>
-			<result>939</result>
-		</highscore>
-		<highscore>
-			<name>kosiacz3q</name>
-			<result>601</result>
-		</highscore>
-		<highscore>
 			<name>unknown player</name>
 			<result>424</result>
 		</highscore>
@@ -27,17 +19,10 @@
 			<result>423</result>
 		</highscore>
 		<highscore>
-			<name>lukaszek</name>
-			<result>279</result>
-		</highscore>
-		<highscore>
-			<name>kosiacz3q</name>
-			<result>118</result>
-		</highscore>
-		<highscore>
-			<name>player</name>
-			<result>118</result>
+			<name>dff</name>
+			<result>0</result>
 		</highscore>
 	</highscores>
 </root>
+
 

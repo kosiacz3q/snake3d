@@ -13,10 +13,6 @@ TextInFrame::TextInFrame(Vector3f position , Vector2f dimmensions, std::string t
 
 }
 
-TextInFrame::~TextInFrame()
-{
-
-}
 
 void TextInFrame::draw()
 {
